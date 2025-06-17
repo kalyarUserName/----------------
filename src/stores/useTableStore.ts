@@ -8,6 +8,8 @@ export const useTableStore = defineStore('table', () => {
   // const editingRowId = ref(null); //если можно не отображать во всех строках сразу все тяжелые UI. В таком случае отображаем span со значением
 
   async function fetchData() {
+    if(tableData.value.length > 0) return;
+
     isLoading.value = true
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
