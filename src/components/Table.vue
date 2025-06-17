@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useTableStore } from '@stores/useTableStore'
 import { TableRow } from '@/types/table'
-import { TableColumn } from 'naive-ui/es/data-table/src/interface'
-import { NDatePicker, NInputNumber, NSwitch } from 'naive-ui'
+import { DataTableColumn, NDatePicker, NInputNumber, NSwitch } from 'naive-ui'
 
 const tableStore = useTableStore()
 
@@ -12,7 +11,7 @@ onMounted(() => {
   tableStore.fetchData()
 })
 // можно сделать отображение span вместо тяжелых компонентов, если строка редактируется.
-const TABLE_HEADERS: TableColumn<TableRow>[] = [
+const TABLE_HEADERS: DataTableColumn<TableRow>[] = [
   {
     key: 'steName',
     title: 'Наименование СТЕ',
@@ -28,8 +27,7 @@ const TABLE_HEADERS: TableColumn<TableRow>[] = [
       return h(NSwitch, {
         value: row.isActual,
         onUpdateValue: (val: boolean) => {
-          tableData.value[index].isActual = val
-          logging(tableData.value[index])
+          tableStore.updateRow(index, { isActual: val })
         },
       })
     },
@@ -43,8 +41,7 @@ const TABLE_HEADERS: TableColumn<TableRow>[] = [
         type: 'date',
         placeholder: 'Выберите дату',
         onUpdateValue: (val: number) => {
-          tableData.value[index].priceEndDate = val
-          logging(tableData.value[index])
+          tableStore.updateRow(index, { priceEndDate: val })
         },
       })
     },
@@ -58,8 +55,7 @@ const TABLE_HEADERS: TableColumn<TableRow>[] = [
         placeholder: 'Введите значение',
         type: 'number',
         onUpdateValue: (val: number | null) => {
-          tableData.value[index].priceNotNds = val
-          updateTotal(index)
+          tableStore.updateRow(index, { priceNotNds: val })
         },
       })
     },
@@ -73,8 +69,7 @@ const TABLE_HEADERS: TableColumn<TableRow>[] = [
         placeholder: 'Введите значение',
         type: 'number',
         onUpdateValue: (val: number | null) => {
-          tableData.value[index].nds = val
-          updateTotal(index)
+          tableStore.updateRow(index, { nds: val })
         },
       })
     },
@@ -88,37 +83,9 @@ const TABLE_HEADERS: TableColumn<TableRow>[] = [
     title: 'Срок заполнения',
   },
 ]
-
-function logging(row: TableRow) {
-  const date = row?.priceEndDate
-    ? new Date(row?.priceEndDate).toLocaleDateString()
-    : row?.priceEndDate
-
-  console.log(
-    'Текущее состояние (id, isActual, price, priceNotNds, nds, priceEndDate):',
-    row?.id,
-    row?.isActual,
-    row?.price,
-    row?.priceNotNds,
-    row?.nds,
-    date
-  )
-}
-
-function updateTotal(index: number) {
-  const row: TableRow = tableData.value[index]
-  if (row.priceNotNds != null && row.nds != null) {
-    row.price = +(row.priceNotNds * (1 + row.nds / 100)).toFixed(2)
-  } else {
-    row.price = null
-  }
-  logging(row)
-}
 </script>
 
 <template>
-  <!-- <n-spin v-if="isLoading" /> -->
-
   <n-data-table
     :columns="TABLE_HEADERS"
     :data="tableData"

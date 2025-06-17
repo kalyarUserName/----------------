@@ -47,5 +47,42 @@ export const useTableStore = defineStore('table', () => {
     isLoading.value = false
   }
 
-  return { tableData, isLoading, fetchData }
+  function updateRow(index: number, patch: Partial<TableRow>) {
+    const oldRow = tableData.value[index]
+    if (oldRow) {
+      const updatedRow = {
+        ...tableData.value[index],
+        ...patch,
+      }
+
+      if (updatedRow.priceNotNds != null && updatedRow.nds != null) {
+        const newPrice = +(updatedRow.priceNotNds * (1 + updatedRow.nds / 100)).toFixed(2)
+        updatedRow.price = newPrice
+      } else {
+        updatedRow.price = null
+      }
+
+      tableData.value[index] = updatedRow
+
+      logging(tableData.value[index])
+    }
+  }
+
+  function logging(row: TableRow) {
+    const date = row?.priceEndDate
+      ? new Date(row?.priceEndDate).toLocaleDateString()
+      : row?.priceEndDate
+
+    console.log(
+      'Текущее состояние (id, isActual, price, priceNotNds, nds, priceEndDate):',
+      row?.id,
+      row?.isActual,
+      row?.price,
+      row?.priceNotNds,
+      row?.nds,
+      date
+    )
+  }
+
+  return { tableData, isLoading, fetchData, updateRow }
 })

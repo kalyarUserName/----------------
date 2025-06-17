@@ -38,4 +38,4 @@ node_modules/.vite/
 
 #временно, чтобы залить
 *.map
-*vue.js
+*.vue.js
