@@ -117,14 +117,16 @@ function updateTotal(index: number) {
 </script>
 
 <template>
-  <n-spin v-if="isLoading" />
+  <!-- <n-spin v-if="isLoading" /> -->
 
   <n-data-table
-    v-else
     :columns="TABLE_HEADERS"
     :data="tableData"
+    :loading="isLoading"
     :bordered="true"
-    :scroll-x="1200"
+    :scroll="{ type: 'virtual' }"
+    :row-key="(row: TableRow) => row.id"
+    style="height: 400px"
   />
 </template>
 
